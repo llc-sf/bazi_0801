@@ -1,0 +1,40 @@
+# -*- encoding:utf-8 -*- 
+
+import sxtwl
+from datetime import datetime
+
+TG = '甲乙丙丁戊己庚辛壬癸'
+DZ   = '子丑寅卯辰巳午未申酉戌亥'
+
+def solar_to_bazi(year: int, month: int, day: int, hour: int, minute: int = 0):
+
+    day_obj = sxtwl.fromSolar(year, month, day) 
+
+    # 公历 → 农历
+    # 农历日期
+    lunar_year  = day_obj.getLunarYear()
+    lunar_month = day_obj.getLunarMonth()
+    lunar_day   = day_obj.getLunarDay()
+    is_leap     = bool(day_obj.isLunarLeap())
+
+
+    # 干支
+    year_gz  = TG[day_obj.getYearGZ().tg]  + DZ[day_obj.getYearGZ().dz]
+    month_gz = TG[day_obj.getMonthGZ().tg] + DZ[day_obj.getMonthGZ().dz]
+    day_gz   = TG[day_obj.getDayGZ().tg]   + DZ[day_obj.getDayGZ().dz]
+    hour_gz  = TG[day_obj.getHourGZ(hour).tg] + DZ[day_obj.getHourGZ(hour).dz]
+
+    # 起运年龄（按出生到下一个节气天数 / 3）
+    #next_jie = lunar.getNextJieQiJD(jd_days)
+    #days_to_next = abs(next_jie - jd_days)
+    #start_age = max(round(days_to_next / 3), 0)
+
+    return {
+        "bazi": f"{year_gz};{month_gz};{day_gz};{hour_gz}",
+        "lunar": {
+            "lunar_year": lunar_year,
+            "lunar_month": lunar_month,
+            "lunar_day": lunar_day,
+            "is_leap_month": is_leap
+        }
+    }
